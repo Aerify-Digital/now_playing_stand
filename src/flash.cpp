@@ -146,6 +146,23 @@ bool Flash::openFile(const char *filename, char *dat)
     return true;
 }
 
+void Flash::deleteFile(const char *filename)
+{
+    if (SerialFlash.exists(filename))
+    {
+        SerialFlash.remove(filename);
+    }
+}
+
+bool Flash::fileExists(const char *filename)
+{
+    if (SerialFlash.exists(filename))
+    {
+        return true;
+    }
+    return false;
+}
+
 // ==========================================================================
 // ==========================================================================
 // Flash Check
