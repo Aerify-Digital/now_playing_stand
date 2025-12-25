@@ -65,7 +65,9 @@ void removeFavorite(const AnimationState &state);
 
 bool isFavorite(const AnimationState &state);
 
-void setColor(CRGB &color);
+void setColor(const CRGB &color);
+
+void changeColor(const CRGB &newColor);
 
 void wipe(AnimationState &state);
 
@@ -77,15 +79,15 @@ void stars(AnimationState &state);
 
 void fire(AnimationState &state);
 
-void visualizer(AnimationState &state);
+void visualizer(const AnimationState &state);
 
-void beatFlash(AnimationState &state);
+void beatFlash(const AnimationState &state);
 
-void beatPulse(AnimationState &state);
+void beatPulse(const AnimationState &state);
 
-void beatWave(AnimationState &state);
+void beatWave(const AnimationState &state);
 
-void beatSparkle(AnimationState &state);
+void beatSparkle(const AnimationState &state);
 
 void shuffleAll(AnimationState &state);
 

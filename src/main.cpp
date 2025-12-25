@@ -1,6 +1,8 @@
 
 #include "main.h"
 
+SemaphoreHandle_t stateMutex = NULL;
+
 TaskHandle_t irTaskHandle = NULL;
 TaskHandle_t argbTaskHandle = NULL;
 TaskHandle_t micTaskHandle = NULL;
@@ -37,12 +39,14 @@ unsigned long lastShuffleTime = 0;
 
 void setInitialAnimation()
 {
+    xSemaphoreTake(stateMutex, portMAX_DELAY);
     animationState.type = ANIMATION_COLOR_WIPE;
     animationState.color = xleds->setRGB(0xff, 0xff, 0xff);
     animationState.step = 0;
     animationState.wait = 25;
     animationState.length = 4;
     animationState.lastUpdate = millis();
+    xSemaphoreGive(stateMutex);
 }
 
 void IRTask(void *pvParameters)
@@ -52,8 +56,10 @@ void IRTask(void *pvParameters)
     {
         if (millis() - lastColorChangeTime >= 3000)
         {
+            xSemaphoreTake(stateMutex, portMAX_DELAY);
             changingColor = false;
             lastColorChangeTime = 0;
+            xSemaphoreGive(stateMutex);
         }
 
         if (IrReceiver.decode())
@@ -82,33 +88,42 @@ void IRTask(void *pvParameters)
                     {
                         on = true;
                         setInitialAnimation();
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         animationState.color = xleds->setRGB(0xff, 0xff, 0xff);
                         animationState.type = ANIMATION_COLOR_WIPE;
                         animationState.step = 0;
                         animationState.wait = 25;
+                        xSemaphoreGive(stateMutex);
                         FastLED.setBrightness(127);
                     }
                     if (changingColor)
                     {
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         changingColor = false;
                         lastColorChangeTime = 0;
+                        xSemaphoreGive(stateMutex);
                     }
                     break;
                 case IR_OFF:
                     DEBUG_PRINTLN("   - Power OFF command received");
                     if (on)
                     {
-                        on = false;
+
                         setInitialAnimation();
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
+                        on = false;
                         animationState.color = xleds->setRGB(0x00, 0x00, 0x00);
                         animationState.type = ANIMATION_COLOR_WIPE;
                         animationState.step = 0;
                         animationState.wait = 25;
+                        xSemaphoreGive(stateMutex);
                     }
                     if (changingColor)
                     {
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         changingColor = false;
                         lastColorChangeTime = 0;
+                        xSemaphoreGive(stateMutex);
                     }
                     break;
                 case IR_R1:
@@ -116,9 +131,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0x00, 0x00);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0x00, 0x00));
                     }
                     else
                     {
@@ -130,9 +143,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0x0b, 0x00);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0x0b, 0x00));
                     }
                     else
                     {
@@ -144,9 +155,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0x1f, 0x00);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0x1f, 0x00));
                     }
                     else
                     {
@@ -158,9 +167,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0x39, 0x00);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0x39, 0x00));
                     }
                     else
                     {
@@ -172,9 +179,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0x7f, 0x00);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0x7f, 0x00));
                     }
                     else
                     {
@@ -186,9 +191,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x00, 0xff, 0x00);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x00, 0xff, 0x00));
                     }
                     else
                     {
@@ -200,9 +203,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x00, 0xff, 0x1f);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x00, 0xff, 0x1f));
                     }
                     else
                     {
@@ -214,9 +215,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x00, 0xff, 0x3f);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x00, 0xff, 0x3f));
                     }
                     else
                     {
@@ -228,9 +227,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x00, 0xff, 0x7f);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x00, 0xff, 0x7f));
                     }
                     else
                     {
@@ -242,9 +239,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x00, 0xff, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x00, 0xff, 0xff));
                     }
                     else
                     {
@@ -256,9 +251,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x00, 0x00, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x00, 0x00, 0xff));
                     }
                     else
                     {
@@ -270,9 +263,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x1f, 0x00, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x1f, 0x00, 0xff));
                     }
                     else
                     {
@@ -284,9 +275,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x3f, 0x00, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x3f, 0x00, 0xff));
                     }
                     else
                     {
@@ -298,9 +287,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0x7f, 0x00, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0x7f, 0x00, 0xff));
                     }
                     else
                     {
@@ -312,9 +299,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0x00, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0x00, 0xff));
                     }
                     else
                     {
@@ -326,9 +311,7 @@ void IRTask(void *pvParameters)
                     if (changingColor)
                     {
                         DEBUG_PRINTLN("   - Alternate ");
-                        animationState.color = xleds->setRGB(0xff, 0xff, 0xff);
-                        changingColor = false;
-                        lastColorChangeTime = 0;
+                        changeColor(xleds->setRGB(0xff, 0xff, 0xff));
                     }
                     else
                     {
@@ -337,6 +320,7 @@ void IRTask(void *pvParameters)
                     break;
                 case IR_RAINBOW:
                     DEBUG_PRINTLN("   - RAINBOW command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.type = ANIMATION_RAINBOW;
                     animationState.step = 0;
                     animationState.wait = 50;
@@ -346,9 +330,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_METEOR:
                     DEBUG_PRINTLN("   - METEOR command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.type = ANIMATION_METEOR;
                     animationState.color = xleds->setRGB(0xff, 0xff, 0xff);
                     animationState.step = (LED_COUNT / 2) - 1;
@@ -359,9 +345,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_STARS:
                     DEBUG_PRINTLN("   - STARS command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.type = ANIMATION_STARS;
                     animationState.step = 0;
                     animationState.wait = 175;
@@ -372,9 +360,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_FIRE:
                     DEBUG_PRINTLN("   - FIRE command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.type = ANIMATION_FIRE;
                     animationState.step = 0;
                     animationState.wait = 125;
@@ -385,9 +375,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_MODE_UP:
                     DEBUG_PRINTLN("   - MODE_UP command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (animationState.type < ANIMATION_COLOR_WIPE || animationState.type >= ANIMATION_MUSIC)
                     {
                         animationState.type = ANIMATION_COLOR_WIPE;
@@ -409,9 +401,11 @@ void IRTask(void *pvParameters)
                     animationState.lastUpdate = millis();
                     DEBUG_PRINT("   - Animation type set to ");
                     DEBUG_PRINTLN(animationState.type);
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_MODE_DOWN:
                     DEBUG_PRINTLN("   - MODE_DOWN command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (animationState.type < ANIMATION_COLOR_WIPE || animationState.type > ANIMATION_MUSIC)
                     {
                         animationState.type = ANIMATION_MUSIC;
@@ -433,6 +427,7 @@ void IRTask(void *pvParameters)
                     animationState.lastUpdate = millis();
                     DEBUG_PRINT("   - Animation type set to ");
                     DEBUG_PRINTLN(animationState.type);
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_FAV_UP:
                     DEBUG_PRINTLN("   - FAV_UP command received");
@@ -446,8 +441,10 @@ void IRTask(void *pvParameters)
                             break;
                         }
                         addFavorite(animationState);
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         changingColor = false;
                         lastColorChangeTime = 0;
+                        xSemaphoreGive(stateMutex);
                     }
                     else
                     {
@@ -456,19 +453,24 @@ void IRTask(void *pvParameters)
                             DEBUG_PRINTLN("   - No favorites saved.");
                             break;
                         }
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         favoriteIndex = (favoriteIndex + 1) % favoriteAnimations.size();
                         animationState = favoriteAnimations[favoriteIndex];
                         DEBUG_PRINT("   - Favorite index set to ");
                         DEBUG_PRINTLN(favoriteIndex);
+                        xSemaphoreGive(stateMutex);
                     }
                     break;
                 case IR_FAV_DOWN:
                     DEBUG_PRINTLN("   - FAV_DOWN command received");
+
                     if (changingColor)
                     {
                         removeFavorite(animationState);
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         changingColor = false;
                         lastColorChangeTime = 0;
+                        xSemaphoreGive(stateMutex);
                     }
                     else
                     {
@@ -477,6 +479,7 @@ void IRTask(void *pvParameters)
                             DEBUG_PRINTLN("   - No favorites saved.");
                             break;
                         }
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         favoriteIndex--;
                         if (favoriteIndex < 0)
                         {
@@ -485,10 +488,12 @@ void IRTask(void *pvParameters)
                         animationState = favoriteAnimations[favoriteIndex];
                         DEBUG_PRINT("   - Favorite index set to ");
                         DEBUG_PRINTLN(favoriteIndex);
+                        xSemaphoreGive(stateMutex);
                     }
                     break;
                 case IR_RAND_SHUF:
                     DEBUG_PRINTLN("   - RAND_SHUF command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (changingColor)
                     {
                         changingColor = false;
@@ -496,9 +501,11 @@ void IRTask(void *pvParameters)
                     }
                     animationState.type = ANIMATION_SHUF_ALL;
                     lastShuffleTime = 0;
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_FAV_SHUF:
                     DEBUG_PRINTLN("   - FAV_SHUF command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (changingColor)
                     {
                         changingColor = false;
@@ -507,13 +514,16 @@ void IRTask(void *pvParameters)
                     if (favoriteAnimations.size() == 0)
                     {
                         DEBUG_PRINTLN("   - No favorites saved.");
+                        xSemaphoreGive(stateMutex);
                         break;
                     }
                     animationState.type = ANIMATION_SHUF_FAV;
                     lastShuffleTime = 0;
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_SPEED_UP:
                     DEBUG_PRINTLN("   - SPEED_UP command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.wait = max(0, animationState.wait - 5);
                     DEBUG_PRINT("new wait time: ");
                     DEBUG_PRINTLN(animationState.wait);
@@ -522,9 +532,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_SPEED_DOWN:
                     DEBUG_PRINTLN("   - SPEED_DOWN command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.wait = min(500, animationState.wait + 5);
                     DEBUG_PRINT("new wait time: ");
                     DEBUG_PRINTLN(animationState.wait);
@@ -533,6 +545,7 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_BRIGHT_UP:
                     DEBUG_PRINTLN("   - BRIGHT_UP command received");
@@ -540,10 +553,13 @@ void IRTask(void *pvParameters)
                     FastLED.show();
                     DEBUG_PRINT("new brightness: ");
                     DEBUG_PRINTLN(FastLED.getBrightness());
+
                     if (changingColor)
                     {
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         changingColor = false;
                         lastColorChangeTime = 0;
+                        xSemaphoreGive(stateMutex);
                     }
                     break;
                 case IR_BRIGHT_DOWN:
@@ -554,12 +570,15 @@ void IRTask(void *pvParameters)
                     DEBUG_PRINTLN(FastLED.getBrightness());
                     if (changingColor)
                     {
+                        xSemaphoreTake(stateMutex, portMAX_DELAY);
                         changingColor = false;
                         lastColorChangeTime = 0;
+                        xSemaphoreGive(stateMutex);
                     }
                     break;
                 case IR_LENGTH_UP:
                     DEBUG_PRINTLN("   - LENGTH_UP command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.length = min(LED_COUNT - 1, animationState.length + 1);
                     DEBUG_PRINT("new length: ");
                     DEBUG_PRINTLN(animationState.length);
@@ -568,9 +587,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_LENGTH_DOWN:
                     DEBUG_PRINTLN("   - LENGTH_DOWN command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     animationState.length = max(1, animationState.length - 1);
                     DEBUG_PRINT("new length: ");
                     DEBUG_PRINTLN(animationState.length);
@@ -579,12 +600,14 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_MUSIC_UP:
                     DEBUG_PRINTLN("   - MUSIC_UP command received");
-
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (animationState.type != ANIMATION_MUSIC)
                     {
+
                         animationState.type = ANIMATION_MUSIC;
                         animationState.step = 0;
                         animationState.lastUpdate = millis();
@@ -619,9 +642,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_MUSIC_DOWN:
                     DEBUG_PRINTLN("   - MUSIC_DOWN command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (animationState.type != ANIMATION_MUSIC)
                     {
                         animationState.type = ANIMATION_MUSIC;
@@ -658,9 +683,11 @@ void IRTask(void *pvParameters)
                         changingColor = false;
                         lastColorChangeTime = 0;
                     }
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_MUSIC_SHUF:
                     DEBUG_PRINTLN("   - MUSIC_SHUF command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (changingColor)
                     {
                         changingColor = false;
@@ -668,9 +695,11 @@ void IRTask(void *pvParameters)
                     }
                     animationState.type = ANIMATION_SHUF_MUSIC;
                     lastShuffleTime = 0;
+                    xSemaphoreGive(stateMutex);
                     break;
                 case IR_CHANGE_COLOR:
                     DEBUG_PRINTLN("   - CHANGE_COLOR command received");
+                    xSemaphoreTake(stateMutex, portMAX_DELAY);
                     if (changingColor == false)
                     {
                         changingColor = true;
@@ -683,6 +712,7 @@ void IRTask(void *pvParameters)
                     }
                     DEBUG_PRINT("   - changingColor set to ");
                     DEBUG_PRINTLN(changingColor ? "true" : "false");
+                    xSemaphoreGive(stateMutex);
                     break;
                 default:
                     DEBUG_PRINT("   - Command received: 0x");
@@ -825,6 +855,7 @@ void MicTask(void *pvParameters)
 
 void setup()
 {
+    stateMutex = xSemaphoreCreateMutex();
     Serial.begin(115200);
     xTaskCreate(ARGBTask, "ARGB Task", 1024, NULL, 1, &argbTaskHandle);
     xTaskCreate(MicTask, "Mic Task", 1024, NULL, 1, &micTaskHandle);
@@ -953,33 +984,48 @@ bool isFavorite(const AnimationState &state)
     return false;
 }
 
-void setColor(CRGB &color)
+void setColor(const CRGB &color)
 {
+    xSemaphoreTake(stateMutex, portMAX_DELAY);
     animationState.color = color;
     animationState.type = ANIMATION_NONE;
     animationState.step = 0;
     animationState.lastUpdate = millis();
+    xSemaphoreGive(stateMutex);
     fill_solid(xleds, LED_COUNT, color);
     FastLED.show();
+}
+
+void changeColor(const CRGB &newColor)
+{
+    xSemaphoreTake(stateMutex, portMAX_DELAY);
+    animationState.color = newColor;
+    changingColor = false;
+    lastColorChangeTime = 0;
+    xSemaphoreGive(stateMutex);
 }
 
 void wipe(AnimationState &state)
 {
     if (state.step >= LED_COUNT / 2)
     {
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.type = ANIMATION_NONE;
         state.step = 0;
         state.lastUpdate = millis();
+        xSemaphoreGive(stateMutex);
         return;
     }
     unsigned long now = millis();
     if (now - state.lastUpdate >= (unsigned long)state.wait)
     {
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         xleds[state.step] = state.color;
         xleds[LED_COUNT - 1 - state.step] = state.color;
         FastLED.show();
         state.step++;
         state.lastUpdate = now;
+        xSemaphoreGive(stateMutex);
     }
 }
 
@@ -987,7 +1033,10 @@ void rainbow(AnimationState &state)
 {
     if (state.step >= 256)
     {
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.step = 0;
+        state.lastUpdate = millis();
+        xSemaphoreGive(stateMutex);
         return;
     }
     unsigned long now = millis();
@@ -1002,8 +1051,10 @@ void rainbow(AnimationState &state)
             xleds[LED_COUNT - 1 - i] = CHSV(hue, 255, 255);
         }
         FastLED.show();
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.step++;
         state.lastUpdate = now;
+        xSemaphoreGive(stateMutex);
     }
 }
 
@@ -1026,8 +1077,10 @@ void meteor(AnimationState &state)
         }
 
         FastLED.show();
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.step = (state.step - 1 + LED_COUNT) % LED_COUNT;
         state.lastUpdate = now;
+        xSemaphoreGive(stateMutex);
     }
 }
 
@@ -1050,7 +1103,9 @@ void stars(AnimationState &state)
         }
 
         FastLED.show();
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.lastUpdate = now;
+        xSemaphoreGive(stateMutex);
     }
 }
 
@@ -1073,11 +1128,13 @@ void fire(AnimationState &state)
         }
 
         FastLED.show();
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.lastUpdate = now;
+        xSemaphoreGive(stateMutex);
     }
 }
 
-void visualizer(AnimationState &state)
+void visualizer(const AnimationState &state)
 {
     int ledsPerRow = LED_COUNT / 2;
     int noiseFloor = 255;
@@ -1119,7 +1176,7 @@ void visualizer(AnimationState &state)
     FastLED.show();
 }
 
-void beatFlash(AnimationState &state)
+void beatFlash(const AnimationState &state)
 {
     static unsigned long beatFlashEnd = 0;
     const int flashDuration = 80;
@@ -1143,7 +1200,7 @@ void beatFlash(AnimationState &state)
     }
 }
 
-void beatPulse(AnimationState &state)
+void beatPulse(const AnimationState &state)
 {
     static unsigned long pulseStart = 0;
     static bool pulsing = false;
@@ -1175,7 +1232,7 @@ void beatPulse(AnimationState &state)
     }
 }
 
-void beatWave(AnimationState &state)
+void beatWave(const AnimationState &state)
 {
     static unsigned long waveStart = 0;
     static bool waving = false;
@@ -1234,7 +1291,7 @@ void beatWave(AnimationState &state)
     }
 }
 
-void beatSparkle(AnimationState &state)
+void beatSparkle(const AnimationState &state)
 {
     static unsigned long sparkleEnd = 0;
     const int sparkleDuration = 300;
@@ -1266,12 +1323,14 @@ void shuffleAll(AnimationState &state)
 {
     if (lastShuffleTime == 0 || millis() - lastShuffleTime >= 30000)
     {
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state = getRandomAnimation();
         if ((state.type == ANIMATION_COLOR_WIPE || state.type == ANIMATION_NONE) && state.color == CRGB::Black)
             state.color = CHSV(random(0, 256), 255, 255);
         lastShuffleTime = millis();
         DEBUG_PRINT("Shuffled to new animation: Type=");
         DEBUG_PRINTLN(state.type);
+        xSemaphoreGive(stateMutex);
     }
     switch (state.type)
     {
@@ -1332,12 +1391,14 @@ void shuffleFavorites(AnimationState &state)
     }
     if (lastShuffleTime == 0 || millis() - lastShuffleTime >= 30000)
     {
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state = getRandomFavorite();
         if ((state.type == ANIMATION_COLOR_WIPE || state.type == ANIMATION_NONE) && state.color == CRGB::Black)
             state.color = CHSV(random(0, 256), 255, 255);
         lastShuffleTime = millis();
         DEBUG_PRINT("Shuffled to new favorite animation: Type=");
         DEBUG_PRINTLN(state.type);
+        xSemaphoreGive(stateMutex);
     }
     switch (state.type)
     {
@@ -1391,8 +1452,10 @@ void shuffleFavorites(AnimationState &state)
 
 void shuffleMusic(AnimationState &state)
 {
+
     if (lastShuffleTime == 0 || millis() - lastShuffleTime >= 30000)
     {
+        xSemaphoreTake(stateMutex, portMAX_DELAY);
         state.type = ANIMATION_MUSIC;
         state.color = CHSV(random(0, 256), 255, 255);
         state.wait = random(25, 201);
@@ -1402,6 +1465,7 @@ void shuffleMusic(AnimationState &state)
         musicMode = getRandomMusicMode();
         DEBUG_PRINT("Shuffled to new music animation: Mode=");
         DEBUG_PRINTLN(musicMode);
+        xSemaphoreGive(stateMutex);
     }
     switch (musicMode)
     {
