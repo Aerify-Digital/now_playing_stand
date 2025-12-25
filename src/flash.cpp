@@ -1,7 +1,7 @@
 #include "flash.h"
 #include "debug.h"
 
-SPIClassRP2040 device = SPIClassRP2040(spi0, 4, 5, 2, 3);
+SPIClassRP2040 device = SPIClassRP2040(spi0, FLASH_MISO_PIN, FLASH_CS_PIN, FLASH_SCK_PIN, FLASH_MOSI_PIN);
 
 void Flash::init(uint8_t pin)
 {

@@ -3,6 +3,7 @@
 
 #include <SerialFlash.h>
 #include <SPI.h>
+#include "pindefs.h"
 
 #define FLASH_DEBUG
 
