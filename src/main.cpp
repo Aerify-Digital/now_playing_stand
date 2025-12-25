@@ -814,6 +814,10 @@ void MicTask(void *pvParameters)
             beatDetected = true;
             lastBeatTime = millis();
         }
+        else
+        {
+            beatDetected = false;
+        }
 
         vTaskDelay(pdMS_TO_TICKS(1));
     }
@@ -1125,7 +1129,6 @@ void beatFlash(AnimationState &state)
         fill_solid(xleds, LED_COUNT, state.color);
         FastLED.show();
         beatFlashEnd = millis() + flashDuration;
-        beatDetected = false;
     }
     else if (millis() < beatFlashEnd)
     {
@@ -1150,7 +1153,6 @@ void beatPulse(AnimationState &state)
     {
         pulseStart = millis();
         pulsing = true;
-        beatDetected = false;
     }
 
     if (pulsing)
@@ -1184,7 +1186,6 @@ void beatWave(AnimationState &state)
     {
         waveStart = millis();
         waving = true;
-        beatDetected = false;
     }
 
     if (waving)
@@ -1242,7 +1243,6 @@ void beatSparkle(AnimationState &state)
     if (beatDetected)
     {
         sparkleEnd = millis() + sparkleDuration;
-        beatDetected = false;
     }
 
     if (millis() < sparkleEnd)
