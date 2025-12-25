@@ -41,7 +41,6 @@ enum MusicMode
     BEAT_SPARKLE
 };
 
-// Animation state
 struct AnimationState
 {
     AnimationType type = ANIMATION_NONE;

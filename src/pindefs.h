@@ -16,7 +16,6 @@
 #ifndef MIC_PIN
 #define MIC_PIN 29
 #endif
-// SPIClassRP2040(spi_inst_t *spi, pin_size_t rx, pin_size_t cs, pin_size_t sck, pin_size_t tx);
 
 #ifndef FLASH_MISO_PIN
 #define FLASH_MISO_PIN 4
