@@ -400,6 +400,11 @@ void IRTask(void *pvParameters)
                             animationState.type = ANIMATION_COLOR_WIPE;
                         }
                     }
+                    if (changingColor)
+                    {
+                        changingColor = false;
+                        lastColorChangeTime = 0;
+                    }
                     animationState.step = 0;
                     animationState.lastUpdate = millis();
                     DEBUG_PRINT("   - Animation type set to ");
@@ -418,6 +423,11 @@ void IRTask(void *pvParameters)
                         {
                             animationState.type = ANIMATION_MUSIC;
                         }
+                    }
+                    if (changingColor)
+                    {
+                        changingColor = false;
+                        lastColorChangeTime = 0;
                     }
                     animationState.step = 0;
                     animationState.lastUpdate = millis();
