@@ -19,24 +19,24 @@ This document describes the functions of each button on the LED controller remot
 
 ![Color Buttons](img/color.png)
 
-| Button        | Function (Code Name) | IR Code | Description                                                                                                                                         |
-| ------------- | -------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Red           | IR_R1                | 0x58    | Set color: Red.<br>When color change mode is active, changes the alternate color for the current animation.                                         |
-| Orange        | IR_R2                | 0x54    | Set color: Orange.<br>When color change mode is active, changes the alternate color for the current animation.                                      |
-| Orange-Yellow | IR_R3                | 0x50    | Set color: Orange-Yellow.<br>When color change mode is active, changes the alternate color for the current animation.                               |
-| Yellow-Orange | IR_R4                | 0x1c    | Set color: Yellow-Orange.<br>When color change mode is active, changes the alternate color for the current animation.                               |
-| Yellow        | IR_R5                | 0x18    | Set color: Yellow.<br>When color change mode is active, changes the alternate color for the current animation.                                      |
-| Green         | IR_G1                | 0x59    | Set color: Green.<br>When color change mode is active, changes the alternate color for the current animation.                                       |
-| Light Green   | IR_G2                | 0x55    | Set color: Light Green.<br>When color change mode is active, changes the alternate color for the current animation.                                |
-| Aqua          | IR_G3                | 0x51    | Set color: Aqua.<br>When color change mode is active, changes the alternate color for the current animation.                                       |
-| Teal          | IR_G4                | 0x1d    | Set color: Teal.<br>When color change mode is active, changes the alternate color for the current animation.                                       |
-| Cyan          | IR_G5                | 0x19    | Set color: Cyan.<br>When color change mode is active, changes the alternate color for the current animation.                                       |
-| Blue          | IR_B1                | 0x45    | Set color: Blue.<br>When color change mode is active, changes the alternate color for the current animation.                                       |
-| Indigo        | IR_B2                | 0x49    | Set color: Indigo.<br>When color change mode is active, changes the alternate color for the current animation.                                     |
-| Violet        | IR_B3                | 0x4d    | Set color: Violet.<br>When color change mode is active, changes the alternate color for the current animation.                                     |
-| Purple        | IR_B4                | 0x1e    | Set color: Purple.<br>When color change mode is active, changes the alternate color for the current animation.                                     |
-| Magenta       | IR_B5                | 0x1a    | Set color: Magenta.<br>When color change mode is active, changes the alternate color for the current animation.                                    |
-| White         | IR_W                 | 0x44    | Set color: White.<br>When color change mode is active, changes the alternate color for the current animation.                                      |
+| Button        | Function (Code Name) | IR Code | Description                                                                                                           |
+| ------------- | -------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| Red           | IR_R1                | 0x58    | Set color: Red.<br>When color change mode is active, changes the alternate color for the current animation.           |
+| Orange        | IR_R2                | 0x54    | Set color: Orange.<br>When color change mode is active, changes the alternate color for the current animation.        |
+| Orange-Yellow | IR_R3                | 0x50    | Set color: Orange-Yellow.<br>When color change mode is active, changes the alternate color for the current animation. |
+| Yellow-Orange | IR_R4                | 0x1c    | Set color: Yellow-Orange.<br>When color change mode is active, changes the alternate color for the current animation. |
+| Yellow        | IR_R5                | 0x18    | Set color: Yellow.<br>When color change mode is active, changes the alternate color for the current animation.        |
+| Green         | IR_G1                | 0x59    | Set color: Green.<br>When color change mode is active, changes the alternate color for the current animation.         |
+| Light Green   | IR_G2                | 0x55    | Set color: Light Green.<br>When color change mode is active, changes the alternate color for the current animation.   |
+| Aqua          | IR_G3                | 0x51    | Set color: Aqua.<br>When color change mode is active, changes the alternate color for the current animation.          |
+| Teal          | IR_G4                | 0x1d    | Set color: Teal.<br>When color change mode is active, changes the alternate color for the current animation.          |
+| Cyan          | IR_G5                | 0x19    | Set color: Cyan.<br>When color change mode is active, changes the alternate color for the current animation.          |
+| Blue          | IR_B1                | 0x45    | Set color: Blue.<br>When color change mode is active, changes the alternate color for the current animation.          |
+| Indigo        | IR_B2                | 0x49    | Set color: Indigo.<br>When color change mode is active, changes the alternate color for the current animation.        |
+| Violet        | IR_B3                | 0x4d    | Set color: Violet.<br>When color change mode is active, changes the alternate color for the current animation.        |
+| Purple        | IR_B4                | 0x1e    | Set color: Purple.<br>When color change mode is active, changes the alternate color for the current animation.        |
+| Magenta       | IR_B5                | 0x1a    | Set color: Magenta.<br>When color change mode is active, changes the alternate color for the current animation.       |
+| White         | IR_W                 | 0x44    | Set color: White.<br>When color change mode is active, changes the alternate color for the current animation.         |
 
 ---
 
@@ -72,8 +72,8 @@ This document describes the functions of each button on the LED controller remot
 | Button      | Function (Code Name) | IR Code | Description                                                                                                                    |
 | ----------- | -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Fav Up      | IR_FAV_UP            | 0x15    | Next favorite.<br>When color select mode is active, saves the current animation as a favorite (unless it's in a shuffle mode). |
-| Fav Down    | IR_FAV_DOWN          | 0x0d    | Previous favorite.<br>When color select mode is active, removes the current animation from favorites.                          |
 | Fav Shuffle | IR_FAV_SHUF          | 0x11    | Shuffle favorite animations                                                                                                    |
+| Fav Down    | IR_FAV_DOWN          | 0x0d    | Previous favorite.<br>When color select mode is active, removes the current animation from favorites.                          |
 
 ---
 
